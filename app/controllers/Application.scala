@@ -11,10 +11,11 @@ import models.Response
 object Application extends Controller {
  
   val responseForm = Form(
-    tuple(
+    mapping(
+      "id" -> longNumber,
       "requestUri" -> nonEmptyText,
       "response" -> text	
-    )
+    )(Response.apply)(Response.unapply)
   )
  
   def index = Action {
@@ -33,9 +34,10 @@ object Application extends Controller {
 
   def newResponse = Action { implicit request =>
     responseForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.index(Response.all(), errors))
-      (requestUri, response) => Response.create(requestUri, response)
-      Redirect(routes.Application.responses)	
+      errors => BadRequest(views.html.index(Response.all(), errors)),
+      resp => { Response.create(resp.requestUri, resp.response)
+      		Redirect(routes.Application.responses)	
+      }
     )
   }
 
