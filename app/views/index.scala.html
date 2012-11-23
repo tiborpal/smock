@@ -1,0 +1,32 @@
+@(responses: List[models.Response], responseForm: Form[String])
+
+@import helper._
+
+@main("static responses") {
+    
+    <h1>@responses.size response(s)</h1>
+    
+    <ul>
+        @responses.map { response =>
+            <li>
+                @response.requestUri
+                
+                @form(routes.Application.deleteResponse(response.id)) {
+                    <input type="submit" value="Delete">
+                }
+            </li>
+        }
+    </ul>
+    
+    <h2>Add a new response</h2>
+    
+    @form(routes.Application.newResponse) {
+        
+        @inputText(responseForm("requestUri")) 
+        @inputText(responseForm("reponse")) 
+        
+        <input type="submit" value="Create">
+        
+    }
+    
+}
