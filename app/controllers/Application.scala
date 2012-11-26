@@ -8,11 +8,13 @@ import play.api.data.Forms._
 
 import models.Response
 
+import anorm._
+
 object Application extends Controller {
  
   val responseForm = Form(
     mapping(
-      "id" -> longNumber,
+      "id" -> ignored(NotAssigned:Pk[Long]),
       "requestUri" -> nonEmptyText,
       "response" -> text	
     )(Response.apply)(Response.unapply)
@@ -24,7 +26,15 @@ object Application extends Controller {
  
 
   def handle(requestUri: String) = Action { implicit request =>
-    Ok("Request URI was: " + request.uri)	
+    val responseOption : Option[Response] = Response.all().find({e: Response => e.requestUri == request.uri})
+    responseOption match {
+      case Some(response) => {
+        Ok(response.response)
+      }
+      case None => {
+        Ok("NotFound")
+      }
+    }
   }
 
 
@@ -41,5 +51,8 @@ object Application extends Controller {
     )
   }
 
-  def deleteResponse(id: Long) = TODO
+  def deleteResponse(id: Long) = Action {
+    Response.delete(id)
+    Redirect(routes.Application.responses)
+  }
 }

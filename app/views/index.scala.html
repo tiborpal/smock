@@ -3,7 +3,13 @@
 @import helper._
 
 @main("static responses") {
-    
+ 
+    @if(responseForm.hasErrors) {
+        <div class="alert-message error">
+            <p><strong>Oops</strong> Please fix all errors</p>
+        </div>
+    }
+       
     <h1>@responses.size response(s)</h1>
     
     <ul>
@@ -11,7 +17,9 @@
             <li>
                 @response.requestUri
                 
-                @form(routes.Application.deleteResponse(response.id)) {
+		@response.response
+
+                @form(routes.Application.deleteResponse(response.id.get)) {
                     <input type="submit" value="Delete">
                 }
             </li>
@@ -23,7 +31,7 @@
     @form(routes.Application.newResponse) {
         
         @inputText(responseForm("requestUri")) 
-        @inputText(responseForm("reponse")) 
+        @inputText(responseForm("response")) 
         
         <input type="submit" value="Create">
         
